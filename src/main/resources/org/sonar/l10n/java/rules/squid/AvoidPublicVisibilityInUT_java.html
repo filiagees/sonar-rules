@@ -1,0 +1,18 @@
+<p>Avoid public visibility in unit-tests</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+@RunWith (MockitoJUnitRunner.class)
+class AvoidPublicVisibilityInUnitTest {
+    public String SOME_CONST = "some value";
+}
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+@RunWith (MockitoJUnitRunner.class)
+class AvoidPublicVisibilityInUnitTest {
+    private String SOME_CONST = "some value";
+}
+</pre>
+<hr>
+See also:
+<a href="https://gerrit.ericsson.se/#/c/9372039/11..12/com.ericsson.bss.ael.bae.adapter.inv/test/com/ericsson/bss/ael/bae/adapter/inv/InvRestClientHandlerTest.java">https://gerrit.ericsson.se/#/c/9372039/11..12/com.ericsson.bss.ael.bae.adapter.inv/test/com/ericsson/bss/ael/bae/adapter/inv/InvRestClientHandlerTest.java</a>

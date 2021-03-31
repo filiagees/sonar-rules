@@ -1,0 +1,14 @@
+{
+  "title": "Avoid public visibility in UTs",
+  "type": "BUG",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "1min"
+  },
+  "tags": [
+    "company",
+    "tests"
+  ],
+  "defaultSeverity": "Minor"
+}
