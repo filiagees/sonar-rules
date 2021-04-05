@@ -1,0 +1,15 @@
+<p>Method in UT doesn't follow expected name pattern</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+    @Test
+    public void badMethodNameWithParam(String paramStr) {
+    }
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+    @Test
+    public void methodName_withParam_shouldBeAccepted(String paramStr) {
+    }
+</pre>
+<hr>
+See extra guideline

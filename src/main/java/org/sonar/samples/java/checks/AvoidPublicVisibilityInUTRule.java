@@ -27,12 +27,12 @@ import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule (key = "AvoidPublicVisibilityInUT", tags =
-{ "junit", "tests" })
+{
+        "junit",
+        "tests"
+})
 public class AvoidPublicVisibilityInUTRule extends BaseTreeVisitor implements JavaFileScanner
 {
-
-    private static final String UNIT_TEST_FILE_SUFFIX = "Test.java";
-
     private JavaFileScannerContext context;
 
     @Override

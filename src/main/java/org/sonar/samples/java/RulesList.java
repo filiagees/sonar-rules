@@ -20,11 +20,13 @@
 package org.sonar.samples.java;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.samples.java.checks.AvoidPublicVisibilityInUTRule;
+import org.sonar.samples.java.checks.unittests.EnsureUnitTestFunctionNameAsPatternRule;
 
 public final class RulesList
 {
@@ -56,7 +58,8 @@ public final class RulesList
 
     public static List<Class<? extends JavaCheck>> getJavaTestChecks()
     {
-        return Collections.singletonList(
-                AvoidPublicVisibilityInUTRule.class);
+        return Arrays.asList(
+                AvoidPublicVisibilityInUTRule.class,
+                EnsureUnitTestFunctionNameAsPatternRule.class);
     }
 }
