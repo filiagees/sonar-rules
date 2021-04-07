@@ -19,8 +19,6 @@
  */
 package org.sonar.samples.java.checks.unittests;
 
-import static org.sonar.samples.java.checks.PrinterVisitor.tokensPositionsRange;
-
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -39,7 +37,7 @@ import org.sonar.samples.java.checks.PrinterVisitor;
 public class EnsureUnitTestFunctionNameAsPatternRule extends BaseTreeVisitor implements JavaFileScanner
 {
     private JavaFileScannerContext context;
-    private final String EXPECTED_UT_METHOD_NAME_PATTERN = "[a-zA-Z]*_with[a-zA-Z]*_should[A-Z][a-zA-Z]*";
+    private final String EXPECTED_UT_METHOD_NAME_PATTERN = "[a-zA-Z]*_(with|when)[a-zA-Z]*_should[A-Z][a-zA-Z]*";
 
     @Override
     public void scanFile(JavaFileScannerContext context)
@@ -60,20 +58,16 @@ public class EnsureUnitTestFunctionNameAsPatternRule extends BaseTreeVisitor imp
     public void visitMethod(MethodTree tree)
     {
         String methodSimpleName = tree.simpleName().name();
-        System.out.printf(" -- %20s %n", methodSimpleName);
-        //        tree.simpleName().annotations().forEach(annotationTree -> System.out.printf("    `- " + annotationTree.atToken().text()));
 
         long testAnnotationCount = tree.modifiers().annotations().stream()
                 .filter(annotationTree -> annotationTree.annotationType().toString().equalsIgnoreCase("Test"))
                 .count();
 
-        if (testAnnotationCount == 1 && !methodSimpleName.matches(EXPECTED_UT_METHOD_NAME_PATTERN))
+        if (testAnnotationCount == 1
+                && !methodSimpleName.matches(EXPECTED_UT_METHOD_NAME_PATTERN)
+                && !FunctionNameAllowList.isAllowedFunctionName(methodSimpleName))
         {
-//            System.out.println(" -- tree.symbol().declaration() = " + tokensPositionsRange(tree.symbol().declaration()));
-            System.out.println(" -- tree.simpleName() = " + tokensPositionsRange(tree.simpleName()));
-
-
-            context.reportIssue(this, tree.simpleName(), "Method in UT doesn't follow expected name pattern.");
+            context.reportIssue(this, tree.simpleName(), "Method in UT doesn't follow expected name pattern: " + EXPECTED_UT_METHOD_NAME_PATTERN);
         }
 
         // The call to the super implementation allows to continue the visit of the AST.
@@ -83,22 +77,3 @@ public class EnsureUnitTestFunctionNameAsPatternRule extends BaseTreeVisitor imp
         // All the code located after the call to the overridden method is executed when leaving the node
     }
 }
-
-//        tree.modifiers().annotations().stream()
-//                .forEach(annotationTree ->
-//                        System.out.println("   `- modifiers().annotations() = "+annotationTree.annotationType().toString()));
-//
-//        for (AnnotationTree annotation : tree.simpleName().annotations())
-//        {
-//            System.out.printf("   `- annotation.atToken.text = %s", annotation.atToken().text());
-//        }
-//
-//        List<SymbolMetadata.AnnotationValue> annotationValues = tree.symbol().metadata().valuesForAnnotation("org.junit.Test");
-//        String annotationName = "";
-//        String annotationValue = "";
-//        if (annotationValues != null && !annotationValues.isEmpty())
-//        {
-//            annotationName = annotationValues.get(0).name();
-//            annotationValue = (String) annotationValues.get(0).value();
-//        }
-//        System.out.println("   `- [org.junit.Test].annotationValues.[0].name = " + annotationName + ":" + annotationValue);

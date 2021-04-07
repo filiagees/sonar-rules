@@ -23,6 +23,10 @@ class EnsureUnitTestFunctionNameAsPattern {
     }
 
     @Test
+    public void methodName_whenParamValid_shouldBeAccepted() {
+    }
+
+    @Test
     public void methodName_withParam_shouldBeAccepted(String paramStr) {
     }
 

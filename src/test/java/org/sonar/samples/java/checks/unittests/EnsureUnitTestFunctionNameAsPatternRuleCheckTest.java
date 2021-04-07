@@ -19,4 +19,10 @@ public class EnsureUnitTestFunctionNameAsPatternRuleCheckTest
 //                .withClassPath(FilesUtils.getClassPath(testJarsDirectory))
                 .verifyIssues();
     }
+
+    @Test
+    public void allowedFunctionNameList()
+    {
+        assert(FunctionNameAllowList.isAllowedFunctionName(""));
+    }
 }
