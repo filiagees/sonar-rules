@@ -17,23 +17,27 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.samples.java.checks;
+package org.sonar.samples.java.checks.unittests;
 
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
-import org.sonar.plugins.java.api.tree.Modifier;
-import org.sonar.plugins.java.api.tree.VariableTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.samples.java.checks.PrinterVisitor;
 
-@Rule (key = "AvoidPublicVisibilityInUT", tags =
+/**
+ * Ensure that functions name used in unit-test agreed with the regex pattern.
+ */
+@Rule (key = "EnsureUnitTestFunctionNameAsPattern", tags =
 {
         "junit",
         "tests"
 })
-public class AvoidPublicVisibilityInUTRule extends BaseTreeVisitor implements JavaFileScanner
+public class EnsureUnitTestFunctionNameAsPatternRule extends BaseTreeVisitor implements JavaFileScanner
 {
     private JavaFileScannerContext context;
+    private final String EXPECTED_UT_METHOD_NAME_PATTERN = "[a-zA-Z]*_(with|when)[a-zA-Z]*_should[A-Z][a-zA-Z]*";
 
     @Override
     public void scanFile(JavaFileScannerContext context)
@@ -51,19 +55,24 @@ public class AvoidPublicVisibilityInUTRule extends BaseTreeVisitor implements Ja
      * @param tree AST of the visited method.
      */
     @Override
-    public void visitVariable(VariableTree tree)
+    public void visitMethod(MethodTree tree)
     {
-        tree.modifiers().modifiers()
-                .forEach(modifierTree -> {
-                    if (modifierTree.modifier().equals(Modifier.PUBLIC))
-                    {
-                        context.reportIssue(this, tree, "Avoid 'public' visibility in a unit-test file");
-                    }
-                });
+        String methodSimpleName = tree.simpleName().name();
+
+        long testAnnotationCount = tree.modifiers().annotations().stream()
+                .filter(annotationTree -> annotationTree.annotationType().toString().equalsIgnoreCase("Test"))
+                .count();
+
+        if (testAnnotationCount == 1
+                && !methodSimpleName.matches(EXPECTED_UT_METHOD_NAME_PATTERN)
+                && !FunctionNameAllowList.isAllowedFunctionName(methodSimpleName))
+        {
+            context.reportIssue(this, tree.simpleName(), "Method in UT doesn't follow expected name pattern: " + EXPECTED_UT_METHOD_NAME_PATTERN);
+        }
 
         // The call to the super implementation allows to continue the visit of the AST.
         // Be careful to always call this method to visit every node of the tree.
-        super.visitVariable(tree);
+        super.visitMethod(tree);
 
         // All the code located after the call to the overridden method is executed when leaving the node
     }

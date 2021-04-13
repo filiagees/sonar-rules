@@ -1,0 +1,14 @@
+{
+  "title": "Method in UT doesn't follow expected name pattern",
+  "type": "BUG",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "1min"
+  },
+  "tags": [
+    "company",
+    "tests"
+  ],
+  "defaultSeverity": "Minor"
+}
